@@ -32,14 +32,19 @@
     
     (is (= nil (or)))
     (is (= false (or nil false)))
-    (is (= 3 (or nil false 3)))
+    (is (= nil (or false nil)))
+    (is (= 3 (or 3)))
+    (is (= 3 (or nil 3 false)))
+    (is (= 3 (or 3 4 5)))
+
+    (is (= true (and)))
+    (is (= false (and false nil)))
+    (is (= nil (and nil false)))
+    (is (= 3 (and 3)))
     (is (= 0 (and "" true 0)))
     (is (= nil (and 0 "" true nil)))
-    (is (= false (and false)))
     (is (= nil (and 3 nil "string")))
     (is (= "string" (and 3 "string")))
-    (is (= 3 (or nil 3 nil)))
-    (is (= false (or nil false)))
 ))
 
 (deftest if-test
