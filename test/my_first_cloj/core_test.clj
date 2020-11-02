@@ -7,8 +7,9 @@
     (is (= java.lang.Long (type 1)))
     (is (= java.lang.String (type "one")))
     (is (= clojure.lang.Ratio (type 1/5)))
+    (is (= clojure.lang.Keyword (type :my_keyword)))
     (is (= clojure.lang.PersistentVector (type [1 2 3])))
-    (is (= clojure.lang.PersistentVector (type ["one" "two" "three"])))
+    (is (= clojure.lang.PersistentVector (type ["one" 1/5 + :my_keyword])))
 ))
 
 (deftest basic-test  
@@ -73,9 +74,44 @@
 ))
 
 (deftest def-test
-  (testing "def"
+  (testing "basic dev"
     (def my-string "string value")
     (is (= "string value" my-string))
+    (def my-func +)
+    (is (= 7 (my-func 2 5)))
+))
+
+(deftest def-map
+  (testing "map behavior"
+    (is (= nil ({} :a_key)))
+    (is (= nil (get {} :a_key)))
+    (is (= nil (:a_key {})))
+    (is (= nil ({:b_key "b value"} :a_key)))
+    (is (= nil (get {:b_key "b value"} :a_key)))
+    (is (= nil (:a_key {:b_key "b value"})))
+    (is (= "a value" ({:a_key "a value"} :a_key)))
+    (is (= "a value" (get {:a_key "a value"} :a_key)))
+    (is (= "a value" (:a_key {:a_key "a value"})))
+    (is (= "default value" ({} :a_key "default value")))
+    (is (= "default value" (get {} :a_key "default value")))
+    (is (= "default value" (:a_key {} "default value")))
+    (is (= {:a 1 :b 2} (hash-map :a 1 :b 2)))
+))
+
+(deftest def-vector
+  (testing "vector behavior"
+    (is (= nil (get [] 0)))
+    (is (= nil (get ["0-index"] 1)))
+    (is (= "0-index" (get ["0-index"] 0)))
+    (is (= [ 17 3/8 "my string" +] (vector 17 3/8 "my string" +)))
+    (is (= [1 2] (conj [1] 2)))
+    (is (= [1 2 3 4] (conj [1 2] 3 4)))
+    (is (= [1 [2]] (conj [1] [2])))
+))
+
+(deftest def-list
+  (testing "list behavior"
+    (is (= '(1 "two" 6/2 +) (list 1 "two" 6/2 +)))
 ))
 
 
