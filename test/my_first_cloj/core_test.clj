@@ -12,11 +12,14 @@
     (is (= clojure.lang.PersistentVector (type ["one" 1/5 + :my_keyword])))
 ))
 
-(deftest basic-test  
+(deftest equality-test  
   (testing "equality"
     (is (= 3 3))
     (is (= "string" "string"))
     (is (= ["string" "vector"] ["string" "vector"]))
+    ; I don't understand how ratios work
+    (is (= 3 6/2))
+    (is (= 21/35 3/5))
   )
 
   (testing "addition"
@@ -111,7 +114,25 @@
 
 (deftest def-list
   (testing "list behavior"
-    (is (= '(1 "two" 6/2 +) (list 1 "two" 6/2 +)))
+    (is (= '(1 "two" 6/5) (list 1 "two" 6/5)))
+    ; Note that this does not work and I don't know why not
+    ; (is (= '(+) (list +) ))
+    ; TODO exception (nth '() 0) etc
+    (is (= (nth '(3) 0) 3))
+    (is (= '( 4 1 2 3) (conj '(1 2 3) 4)))
+))
+
+(deftest def-set
+  (testing "set behavior"
+    (is (= #{} (hash-set)))
+    (is (= #{"zero" 0} (hash-set "zero" 0)))
+    ; Must learn how to test for exceptions #{0 0}
+    (is (= #{0} (set [0 0])))
+    (is (= #{0} (set '(0 0))))
+    (is (= #{0 1} #{1 0}))
+    (is (contains? #{"string"} "string"))
+    (is (not (contains? #{"string"} "different string")))
+
 ))
 
 
