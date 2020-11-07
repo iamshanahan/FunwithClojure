@@ -132,8 +132,72 @@
     (is (= #{0 1} #{1 0}))
     (is (contains? #{"string"} "string"))
     (is (not (contains? #{"string"} "different string")))
-
+    (is (contains? #{nil} nil))
+    (is (not (contains? #{"string"} nil)))
+    (is (= :a (:a #{:a :b})))
+    (is (= nil (:a #{:b :c})))
+    (is (= nil (get #{"a" "b"} "c")))
+    (is (= nil (get #{"a" "b"} nil)))
 ))
 
+(deftest def-map
+  (testing "map behavior" 
+    (is (= '(1 2 3 4) (map inc [0 1 2 3])))
+    (is (= '(1 2 3 4) (map inc '(0 1 2 3))))
+))
 
+(deftest def-func
+  (testing "function behavior"
+    (defn myfunc
+      []
+      17)
+    (is (= 17 (myfunc)))
+    (defn myfunc 
+      "doc string"
+      []
+      17)
+    (is (= 17 (myfunc)))
+    (defn myfunc
+      [a-param]
+      (str "Param: " a-param))
+    (is (= "Param: 17" (myfunc 17)))
+    (defn myfunc
+      ([]
+       0)
+      ([one-arg]
+       (+ 1 one-arg))
+      ([one-arg two-arg three-arg]
+       (+ 10000 one-arg two-arg three-arg))
+      ([one-arg two-arg]
+       (+ 100 one-arg two-arg))
+      )
+    (is (= 0 (myfunc)))
+    (is (= 8 (myfunc 7)))
+    (is (= 109 (myfunc 4 5)))
+    (is (= 10017 (myfunc 5 6 6)))
+    (defn func-default-param
+      ([]
+       (func-default-param "world"))
+      ([name]
+       (str "Hello, " name "!"))
+      )
+    (is (= "Hello, world!" (func-default-param)))
+    (is (= "Hello, Clyde!" (func-default-param "Clyde")))
+    
+    (defn func-rest-param
+      ([& rest-params]
+       rest-params))
+    (is (= nil (func-rest-param)))
+    (is (= '("param") (func-rest-param "param")))
+    (is (= '("param1" "param2") (func-rest-param "param1" "param2")))
 
+    (defn func-mixed-params
+      [first-param & rest-params]
+      (map #(str first-param ":" %) rest-params))
+    (is (= '() (func-mixed-params "first-param")))
+
+    (defn func-destructured
+      [[first-thing second-thing other-things]]
+      0)
+    (is (= 0 (func-destructured [] )))
+))
