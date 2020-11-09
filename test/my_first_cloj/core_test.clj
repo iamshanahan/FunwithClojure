@@ -195,9 +195,21 @@
       [first-param & rest-params]
       (map #(str first-param ":" %) rest-params))
     (is (= '() (func-mixed-params "first-param")))
+    (is (= '("first-param:second-param") (func-mixed-params "first-param" "second-param")))
 
     (defn func-destructured
-      [[first-thing second-thing other-things]]
-      0)
-    (is (= 0 (func-destructured [] )))
+      [[first-thing second-thing & other-things]]
+      (map #(* (+ first-thing second-thing) %) other-things))
+    (is (= '(9) (func-destructured [1 2 3] )))
+    (is (= '() (func-destructured [1 2] )))
+    (is (= '() (func-destructured [1] )))
+    (defn announce-treasure-location
+      [{:keys [lat lng] :as treasure-location} recurse]
+      (println (str "Treasure lat: " lat))
+      (println (str "Treasure lng: " lng))
+      (println treasure-location)
+      (if recurse (announce-treasure-location treasure-location false))
+      ;%1
+      )
+    (announce-treasure-location {:lng 20 :lat 43} true)
 ))
