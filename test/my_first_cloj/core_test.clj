@@ -189,6 +189,50 @@
        rest-params))
     (is (= nil (func-rest-param)))
     (is (= '("param") (func-rest-param "param")))
+    (is (= '("param1" "param2") (func-rest-param "param1" "param2"))
+(deftest def-func
+  (testing "function behavior"
+    (defn myfunc
+      []
+      17)
+    (is (= 17 (myfunc)))
+    (defn myfunc 
+      "doc string"
+      []
+      17)
+    (is (= 17 (myfunc)))
+    (defn myfunc
+      [a-param]
+      (str "Param: " a-param))
+    (is (= "Param: 17" (myfunc 17)))
+    (defn myfunc
+      ([]
+       0)
+      ([one-arg]
+       (+ 1 one-arg))
+      ([one-arg two-arg three-arg]
+       (+ 10000 one-arg two-arg three-arg))
+      ([one-arg two-arg]
+       (+ 100 one-arg two-arg))
+      )
+    (is (= 0 (myfunc)))
+    (is (= 8 (myfunc 7)))
+    (is (= 109 (myfunc 4 5)))
+    (is (= 10017 (myfunc 5 6 6)))
+    (defn func-default-param
+      ([]
+       (func-default-param "world"))
+      ([name]
+       (str "Hello, " name "!"))
+      )
+    (is (= "Hello, world!" (func-default-param)))
+    (is (= "Hello, Clyde!" (func-default-param "Clyde")))
+    
+    (defn func-rest-param
+      ([& rest-params]
+       rest-params))
+    (is (= nil (func-rest-param)))
+    (is (= '("param") (func-rest-param "param")))
     (is (= '("param1" "param2") (func-rest-param "param1" "param2")))
 
     (defn func-mixed-params
@@ -212,4 +256,95 @@
       ;%1
       )
     (announce-treasure-location {:lng 20 :lat 43} true)
+))
+)
+
+    (defn func-mixed-params
+      [first-param & rest-params]
+      (map #(str first-param ":" %) rest-params))
+    (is (= '() (func-mixed-params "first-param")))
+    (is (= '("first-param:second-param") (func-mixed-params "first-param" "second-param")))
+
+    (defn func-destructured
+      [[first-thing second-thing & other-things]]
+      (map #(* (+ first-thing second-thing) %) other-things))
+    (is (= '(9) (func-destructured [1 2 3] )))
+    (is (= '() (func-destructured [1 2] )))
+    (is (= '() (func-destructured [1] )))
+    (defn announce-treasure-location
+      [{:keys [lat lng] :as treasure-location} recurse]
+      (println (str "Treasure lat: " lat))
+      (println (str "Treasure lng: " lng))
+      (println treasure-location)
+      (if recurse (announce-treasure-location treasure-location false))
+      ;%1
+      )
+    (announce-treasure-location {:lng 20 :lat 43} true)
+))
+
+(deftest def-anon-func
+  (testing "anonymous function behavior"
+
+    (is (= 17 ((fn [] 17))))
+    
+    (is (= "Param: 17" ((fn [param] (str "Param: " param)) 17)))
+
+    (defn myfunc
+      ([]
+       0)
+      ([one-arg]
+       (+ 1 one-arg))
+      ([one-arg two-arg three-arg]
+       (+ 10000 one-arg two-arg three-arg))
+      ([one-arg two-arg]
+       (+ 100 one-arg two-arg))
+      )
+    (is (= 0 ((fn ([] 0) ([one-arg] (+ 1 one-arg))))))
+    (is (= 8 ((fn ([] 0) ([one-arg] (+ 1 one-arg))) 7)))
+    (is (= 8 (myfunc 7)))
+    (is (= 109 (myfunc 4 5)))
+    (is (= 10017 (myfunc 5 6 6)))
+    (defn func-default-param
+      ([]
+       (func-default-param "world"))
+      ([name]
+       (str "Hello, " name "!"))
+      )
+    (is (= "Hello, world!" (func-default-param)))
+    (is (= "Hello, Clyde!" (func-default-param "Clyde")))
+    
+    (defn func-rest-param
+      ([& rest-params]
+       rest-params))
+    (is (= nil (func-rest-param)))
+    (is (= '("param") (func-rest-param "param")))
+    (is (= '("param1" "param2") (func-rest-param "param1" "param2")))
+
+    (defn func-mixed-params
+      [first-param & rest-params]
+      (map #(str first-param ":" %) rest-params))
+    (is (= '() (func-mixed-params "first-param")))
+    (is (= '("first-param:second-param") (func-mixed-params "first-param" "second-param")))
+
+    (defn func-destructured
+      [[first-thing second-thing & other-things]]
+      (map #(* (+ first-thing second-thing) %) other-things))
+    (is (= '(9) (func-destructured [1 2 3] )))
+    (is (= '() (func-destructured [1 2] )))
+    (is (= '() (func-destructured [1] )))
+    (defn announce-treasure-location
+      [{:keys [lat lng] :as treasure-location} recurse]
+      (println (str "Treasure lat: " lat))
+      (println (str "Treasure lng: " lng))
+      (println treasure-location)
+      (if recurse (announce-treasure-location treasure-location false))
+      ;%1
+      )
+    (announce-treasure-location {:lng 20 :lat 43} true)
+))
+
+(deftest return-func
+  (testing "returning functions"
+    (defn inc-maker [increment] #(+ % increment))
+    (is (= 9 ((inc-maker 7) 2)))
 ))
