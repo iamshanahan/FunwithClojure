@@ -8,8 +8,7 @@
     (is (= java.lang.String (type "one")))
     (is (= clojure.lang.Ratio (type 1/5)))
     (is (= clojure.lang.Keyword (type :my_keyword)))
-    (is (= clojure.lang.PersistentVector (type [1 2 3])))
-    (is (= clojure.lang.PersistentVector (type ["one" 1/5 + :my_keyword])))
+    (is (= java.lang.Boolean (type true)))
 ))
 
 (deftest equality-test  
@@ -103,6 +102,8 @@
 
 (deftest def-vector
   (testing "vector behavior"
+    (is (= clojure.lang.PersistentVector (type [1 2 3])))
+    (is (= clojure.lang.PersistentVector (type ["one" 1/5 + :my_keyword])))
     (is (= nil (get [] 0)))
     (is (= nil (get ["0-index"] 1)))
     (is (= "0-index" (get ["0-index"] 0)))
